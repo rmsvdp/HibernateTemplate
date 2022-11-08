@@ -1,12 +1,13 @@
 package mariadbApp;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-
+import org.hibernate.query.Query;
 
 import reverse.*;
 
@@ -46,6 +47,9 @@ public class MainApp {
 		miNota.setId(new NotasId(asig.getCdn(),miAlumno.getIdn()));	// La clave de relación
 		//System.out.printf("Nota : %s | %s\n" ,n486.getAsignaturas().getNombre(),n486.getAlumnos().getApenom());
 		hbse.save(miNota);  // Lo guardo
+		System.out.printf("\n\nAlumno insertado: %s",miAlumno.getApenom());
+		System.out.printf("\nNota asignada: %s\n",miNota.getNota());
+		espera(1);
 // -----------------------------------------------------------------------------------
 //  BORRADO DE REGISTROS	
 	// Borrar registros
@@ -54,9 +58,9 @@ public class MainApp {
 		hbse.delete(miNota);
 		hbse.delete(miAlumno);
 	hbtr.commit();
-	
-	System.out.printf("Alumno insertado: %s",miAlumno.getApenom());
-	System.out.printf("Nota asignada: %s\n",miNota.getNota());
+	System.out.printf("\n\nAlumno eliminado: %s",miAlumno.getApenom());
+	System.out.printf("\nNota eliminada: %s\n",miNota.getNota());
+	espera(1);
 	
 // A.- Cerrar Sessión
 	hbse.close();
@@ -64,7 +68,9 @@ public class MainApp {
 // CONSULTA DE INFORMACIÓN
 // Listar información con métodos get-load
 	 listaNotasAlumno("12500501");
+	 espera(1);
 	 listaAlumnosAsig(486);
+	 espera(1);
 // Listar información con HQL
 	 ejemploHql();
 // Listar información con SQL nativo
@@ -93,9 +99,9 @@ public class MainApp {
 				miNota = it.next();
 				miAlumno= miNota.getAlumnos();
 				System.out.println(padRight(miAlumno.getApenom(),32)+ ": "+ miNota.getNota());
-// ACTUALIZA REGISTROS -------------------------------------
-				//miNota.setNota(8);
-				//hbses.update(miNota);
+//	ACTUALIZACIÓN DE REGISTROS ------------------------------------------------
+//				miNota.setNota(8);
+//				hbses.update(miNota);
 			}
 			System.out.println("---------------------------------------------------------");
 			hbtr.commit();
@@ -105,10 +111,8 @@ public class MainApp {
 		} else {
 			System.out.println("Asignatura no encontrada");
 		}
-	
-	
-	
 	}
+	
 	public static void listaNotasAlumno(String alumId) {
 		
 		Session hbses = hbsf.openSession();		// Creamos una sesión
@@ -138,20 +142,58 @@ public class MainApp {
 		}
 	}
 	
-public static void ejemploHql() {
-	
-	
-}
+	public static void ejemploHql() {
+		Session hbses = hbsf.openSession();		// Creamos una sesión
+		String ssql ="FROM Alumnos A WHERE A.idn = '12500501'";
+		String ssql2 ="FROM Alumnos A WHERE A.idn = :e_id";
+		Alumnos al = new Alumnos();
+		Query q1 = hbses.createQuery(ssql);
+		Query q2 = hbses.createQuery(ssql2);
+		q2.setParameter("e_id", "12500501");
+		List rs = q1.list();
+		List rs2 = q2.list();
+		Iterator<Alumnos> it = rs.iterator();
+		Iterator<Alumnos> it2 = rs.iterator();
+		System.out.println();
+		// Query Fija
+		while(it.hasNext()) {
+			al = it.next();
+			System.out.println("ID    :" + al.getIdn());
+			System.out.println("Nombre:" + al.getApenom());
+			System.out.println("Email :" + al.getEmail());
+		}
+		System.out.println();
+		// Query Parametrizada
+		while(it2.hasNext()) {
+			al = it2.next();
+			System.out.println("ID    :" + al.getIdn());
+			System.out.println("Nombre:" + al.getApenom());
+			System.out.println("Email :" + al.getEmail());
+		}
+		hbses.close();							// Cerramos la sesión
+	}
 
-public static void ejemploSqlNativo() {
-	
-	
-}
+	public static void ejemploSqlNativo() {
+		Session hbses = hbsf.openSession();		// Creamos una sesión
+		hbses.close();							// Cerramos la sesión
+		
+	}
 
-public static void ejemploCriteria() {
+	public static void ejemploCriteria() {
+		Session hbses = hbsf.openSession();		// Creamos una sesión
+		hbses.close();							// Cerramos la sesión
+		
+	}
 	
+	public static void espera(int t ) {
+		try {
+			Thread.sleep(t*1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
-}
 	public static String padRight(String s,int tam) {
 		int t = tam - s.length();
 		if (t> 0) {
