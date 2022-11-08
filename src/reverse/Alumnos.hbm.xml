@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 7 nov 2022 21:01:25 by Hibernate Tools 6.1.3.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="db2amt" name="reverse.Alumnos" optimistic-lock="none" table="alumnos">
+        <id name="idn" type="string">
+            <column length="10" name="IDN"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="apenom" type="string">
+            <column length="32" name="APENOM"/>
+        </property>
+        <property name="direcc" type="string">
+            <column length="32" name="DIRECC"/>
+        </property>
+        <property name="prov" type="string">
+            <column length="32" name="PROV"/>
+        </property>
+        <property name="email" type="string">
+            <column length="32" name="EMAIL"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="notases" table="notas">
+            <key>
+                <column length="10" name="IDN" not-null="true"/>
+            </key>
+            <one-to-many class="reverse.Notas"/>
+        </set>
+    </class>
+</hibernate-mapping>

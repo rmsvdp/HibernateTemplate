@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 7 nov 2022 21:01:25 by Hibernate Tools 6.1.3.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="db2amt" name="reverse.Asignaturas" optimistic-lock="none" table="asignaturas">
+        <id name="cdn" type="int">
+            <column name="CDN"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="nombre" type="string">
+            <column length="32" name="NOMBRE"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="notases" table="notas">
+            <key>
+                <column name="CDN" not-null="true"/>
+            </key>
+            <one-to-many class="reverse.Notas"/>
+        </set>
+    </class>
+</hibernate-mapping>
