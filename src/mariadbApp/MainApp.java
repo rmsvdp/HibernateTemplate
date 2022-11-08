@@ -93,8 +93,9 @@ public class MainApp {
 				miNota = it.next();
 				miAlumno= miNota.getAlumnos();
 				System.out.println(padRight(miAlumno.getApenom(),32)+ ": "+ miNota.getNota());
-				miNota.setNota(8);
-				hbses.update(miNota);
+// ACTUALIZA REGISTROS -------------------------------------
+				//miNota.setNota(8);
+				//hbses.update(miNota);
 			}
 			System.out.println("---------------------------------------------------------");
 			hbtr.commit();
