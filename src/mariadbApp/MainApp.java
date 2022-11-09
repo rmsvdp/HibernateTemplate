@@ -1,12 +1,18 @@
 package mariadbApp;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Criteria;
+//import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 
 import reverse.*;
@@ -59,7 +65,7 @@ public class MainApp {
 		hbse.delete(miAlumno);
 	hbtr.commit();
 	System.out.printf("\n\nAlumno eliminado: %s",miAlumno.getApenom());
-	System.out.printf("\nNota eliminada: %s\n",miNota.getNota());
+	System.out.printf("\nNota eliminada: %s\n",miNota.getNota()+"\n");
 	espera(1);
 	
 // A.- Cerrar Sessión
@@ -67,12 +73,12 @@ public class MainApp {
 // -----------------------------------------------------------------------------------
 // CONSULTA DE INFORMACIÓN
 // Listar información con métodos get-load
-	 listaNotasAlumno("12500501");
-	 espera(1);
-	 listaAlumnosAsig(486);
-	 espera(1);
+	 //listaNotasAlumno("12500501");
+	// espera(1);
+	// listaAlumnosAsig(486);
+	// espera(1);
 // Listar información con HQL
-	 ejemploHql();
+	// ejemploHql();
 // Listar información con SQL nativo
 	 ejemploSqlNativo();
 // Uso del objeto criteria
@@ -170,17 +176,67 @@ public class MainApp {
 			System.out.println("Nombre:" + al.getApenom());
 			System.out.println("Email :" + al.getEmail());
 		}
+
 		hbses.close();							// Cerramos la sesión
 	}
 
+	
 	public static void ejemploSqlNativo() {
 		Session hbses = hbsf.openSession();		// Creamos una sesión
+		
+		String ssql = " ";
+
+		// Query de escalares (varios campos de distintas tablas)
+		// Listado de alumnos ordenado alfabéticamente
+		ssql = "SELECT  distinct NOMBRE as nmod, APENOM"
+				+ " FROM alumnos, asignaturas"
+				+ " WHERE NOMBRE = 'Acceso a Datos'"
+				+ " ORDER BY APENOM";
+		NativeQuery nq = hbses. createNativeQuery(ssql);
+		nq.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		List nq_esc = nq.list();
+		
+	         for(Object registro : nq_esc) {
+	            Map tupla = (Map)registro;
+	            System.out.print("Asignatura: " + tupla.get("nmod")); 
+	            System.out.println(", Alumno: " + tupla.get("APENOM")); 
+	         }
+	 	// Query de entidades (varios campos de distintas tablas)
+	 	// Listado de alumnos ordenado alfabéticamente		
+	 	ssql = "SELECT  * FROM alumnos";
+        NativeQuery nq2 = hbses. createNativeQuery(ssql);
+        nq2.addEntity(Alumnos.class);
+        List nq_ent = nq2.list();
+        System.out.println("\n" +padRight("Apellidos",32) + padRight("Dirección",32) + "Email\n"); 
+        for (Iterator iterator = nq_ent.iterator(); iterator.hasNext();){
+           Alumnos eal = (Alumnos) iterator.next(); 
+           System.out.print(padRight(eal.getApenom(),32)); 
+           System.out.print(padRight(eal.getDirecc(),32)); 
+           System.out.println(padRight(eal.getEmail(),32)); 
+        }	
 		hbses.close();							// Cerramos la sesión
 		
 	}
 
 	public static void ejemploCriteria() {
 		Session hbses = hbsf.openSession();		// Creamos una sesión
+		String ssql;
+		
+		
+		Criteria cr = hbses. createCriteria(Alumnos.class);
+		//cr.add(Restrictions.eq("idn", "12500501"));
+		cr.add(Restrictions.like("apenom","s%"));
+		List results = cr.list();
+		
+	 	
+        System.out.println("\n" +padRight("Apellidos",32) + padRight("Dirección",32) + "Email\n"); 
+        for (Iterator iterator = results.iterator(); iterator.hasNext();){
+           Alumnos eal = (Alumnos) iterator.next(); 
+           System.out.print(padRight(eal.getApenom(),32)); 
+           System.out.print(padRight(eal.getDirecc(),32)); 
+           System.out.println(padRight(eal.getEmail(),32)); 
+        }
+		
 		hbses.close();							// Cerramos la sesión
 		
 	}
