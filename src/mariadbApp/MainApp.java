@@ -11,10 +11,12 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 
+import anotacion.Profesores;
 import reverse.*;
 
 public class MainApp {
@@ -28,10 +30,29 @@ public class MainApp {
 	Notas miNota = new Notas();  // Nota para acceso a datos
 	
 	System.out.println("--- Inicio de la sesión Hibernate");
-	hbsf = HibernateUtil.getSessionFactory();			// 1.- Recuperar el sessionFactory
+	//sessionFactory con mapeo por anotaciones
+	/**/
+    try {
+        // 1.- Crear el sessionFactory  
+    	  Configuration cfgAnotac = new Configuration();
+		  hbsf= cfgAnotac.configure().addAnnotatedClass(Profesores.class).buildSessionFactory();
+		  Session hbse = hbsf.openSession();		  // 2.- Crear session para operar
+      	  Transaction hbtr = hbse.beginTransaction(); // 3.- Crear transacción
+      	  Profesores p = new Profesores("007ES","Ruiz Espada,Jorge","C.-Azcona,13","MURCIA","azcona33@vdp.com");
+      	  hbse.save(p);
+      	  hbtr.commit();
+    	  hbse.close();
+    } catch (Throwable ex) { 
+    		System.err.println("Failed to create sessionFactory object." + ex);
+    		throw new ExceptionInInitializerError(ex); 
+    }
 	
+	/**/
+	// sessionFactory desde mapeo XML
+	hbsf = HibernateUtil.getSessionFactory();			// 1.- Recuperar el sessionFactory
 	Session hbse = hbsf.openSession();					// 2.- Crear session para operar
 	Transaction hbtr = hbse.beginTransaction(); // 3.- Crear transacción
+	
 // -----------------------------------------------------------------------------------
 //  INSERCIÓN DE REGISTROS	
 // Insertar alumno	------------------------------------------------------------------
