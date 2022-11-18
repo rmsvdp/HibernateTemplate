@@ -30,8 +30,10 @@ public class MainApp {
 	Notas miNota = new Notas();  // Nota para acceso a datos
 	
 	System.out.println("--- Inicio de la sesión Hibernate");
-	//sessionFactory con mapeo por anotaciones
-	/**/
+	/*
+	 * sessionFactory con mapeo por anotaciones +++++++++++++++++++++++++++++++++
+	 */
+	/*
     try {
         // 1.- Crear el sessionFactory  
     	  Configuration cfgAnotac = new Configuration();
@@ -47,9 +49,20 @@ public class MainApp {
     		throw new ExceptionInInitializerError(ex); 
     }
 	
-	/**/
-	// sessionFactory desde mapeo XML
-	hbsf = HibernateUtil.getSessionFactory();			// 1.- Recuperar el sessionFactory
+	*/
+	
+	/*
+	 *  sessionFactory desde mapeo XML +++++++++++++++++++++++++++++++++++++++++
+	 *  
+	*/
+	
+	// Método 1 desde Hibernate Util
+		//hbsf = HibernateUtil.getSessionFactory();	
+	// 1.- Recuperar el sessionFactory
+	// Método 2 instancia directa
+	  	Configuration config = new Configuration();
+	  	//config.configure();
+	  	SessionFactory hbsf = config.configure().buildSessionFactory();// crear local SessionFactory 
 	Session hbse = hbsf.openSession();					// 2.- Crear session para operar
 	Transaction hbtr = hbse.beginTransaction(); // 3.- Crear transacción
 	
@@ -62,9 +75,9 @@ public class MainApp {
 		miAlumno.setProv("MADRID");
 		miAlumno.setDirecc("C.-Mayor, 27");
 		hbse.save(miAlumno);
-	hbtr.commit();
-// Insertar nota
-	hbtr.begin();
+		hbtr.commit();
+		// Insertar nota
+		hbtr.begin();
 		asig = (Asignaturas) hbse.load(Asignaturas.class,486);
 		//System.out.printf("Asignatura codigo : %d | %s\n" ,asig.getCdn(),asig.getNombre());
 		// b.- Preparar la nota a insertar	
